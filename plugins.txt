@@ -1,5 +1,4 @@
 git
-docker
 workflow-aggregator
 docker-workflow
 blueocean
@@ -8,3 +7,6 @@ github
 workflow-job
 credentials
 credentials-binding
+ansicolor
+pipeline-utility-steps
+github-branch-source
