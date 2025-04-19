@@ -1,5 +1,5 @@
 pipeline {
-    agent { label 'docker-agent-python3' }
+    agent { label 'docker-agent-alpine' }  // 🔄 Match the label from Docker Agent Template
 
     stages {
         stage('Build') {
