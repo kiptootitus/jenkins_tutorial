@@ -1,4 +1,5 @@
 git
+docker
 workflow-aggregator
 docker-workflow
 blueocean
