@@ -1,5 +1,9 @@
 pipeline {
-    agent { label 'docker-agent-alpine' }  // 🔄 Match the label from Docker Agent Template
+    agent any
+
+    environment {
+        PYTHON_IMAGE = 'python:3.8-slim'
+    }
 
     stages {
         stage('Build') {
@@ -7,21 +11,38 @@ pipeline {
                 echo 'Building...'
             }
         }
+
         stage('Install') {
             steps {
-                sh 'pip install -r requirements.txt'
+                script {
+                    docker.image(env.PYTHON_IMAGE).inside {
+                        sh '''
+                            python --version
+                            python -m ensurepip --upgrade
+                            pip install --upgrade pip
+                            pip install -r requirements.txt
+                        '''
+                    }
+                }
             }
         }
+
         stage('Running') {
             steps {
-                sh 'python hello.py'
+                script {
+                    docker.image(env.PYTHON_IMAGE).inside {
+                        sh 'python hello.py'
+                    }
+                }
             }
         }
+
         stage('Test') {
             steps {
                 echo 'Testing...'
             }
         }
+
         stage('Deploy') {
             steps {
                 echo 'Deploying...'
