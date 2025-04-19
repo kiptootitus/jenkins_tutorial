@@ -10,7 +10,10 @@ services:
       - "50000:50000"
     volumes:
       - jenkins_home:/var/jenkins_home
+      - ./init.groovy.d:/usr/share/jenkins/ref/init.groovy.d
+      - ./plugins.txt:/usr/share/jenkins/ref/plugins.txt
       - /var/run/docker.sock:/var/run/docker.sock
+
 
 volumes:
   jenkins_home:

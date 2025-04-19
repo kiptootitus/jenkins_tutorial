@@ -15,11 +15,11 @@ pipeline {
         stage('Install') {
             steps {
                 script {
-                    docker.image(env.PYTHON_IMAGE).inside('-u root') {
+                    docker.image(env.PYTHON_IMAGE).inside('--user root') {
                         sh '''
-                            export HOME=/tmp  # prevent writing to /.local
+                            export HOME=/tmp
                             python --version
-                            python -m ensurepip --upgrade || true  # fails if already present
+                            python -m ensurepip --upgrade || true
                             pip install --no-cache-dir --upgrade pip
                             pip install --no-cache-dir -r requirements.txt
                         '''
@@ -31,7 +31,7 @@ pipeline {
         stage('Running') {
             steps {
                 script {
-                    docker.image(env.PYTHON_IMAGE).inside('-u root') {
+                    docker.image(env.PYTHON_IMAGE).inside('--user root') {
                         sh '''
                             export HOME=/tmp
                             python hello.py
