@@ -1,2 +1,2 @@
-sixsix
+six
 pytest
