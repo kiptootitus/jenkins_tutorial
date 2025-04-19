@@ -1,40 +1,30 @@
 import jenkins.model.*
-import hudson.model.*
 import hudson.plugins.git.*
+import hudson.model.*
 import org.jenkinsci.plugins.workflow.job.*
 import org.jenkinsci.plugins.workflow.cps.*
+import hudson.plugins.git.extensions.impl.*
 
 def jenkins = Jenkins.instance
-
 def jobName = "jenkins_tutorial"
-def job = jenkins.getItem(jobName)
 
-if (job == null) {
-    try {
-        println "Creating job: ${jobName}"
+if (jenkins.getItem(jobName) == null) {
+    println "🔧 Creating pipeline job: ${jobName}"
 
-        // Create GitSCM with an explicit refspec
-        def gitScm = new GitSCM(
-            GitSCM.createRepoList("https://github.com/kiptootitus/jenkins_tutorial.git", null),
-            [new BranchSpec("*/main")], // Specify the default branch (adjust to "*/master" if needed)
-            null, // No user remote configs
-            null, // No browser
-            null, // No git tool
-            [new UserRemoteConfig("https://github.com/kiptootitus/jenkins_tutorial.git", "origin", "+refs/heads/*:refs/remotes/origin/*", null)] // Explicit refspec
-        )
+    // Git SCM configuration
+    def scm = new GitSCM("https://github.com/kiptootitus/jenkins_tutorial.git")
+    scm.branches = [new BranchSpec("*/main")]  // 👈 Explicitly define the branch!
+    scm.extensions.add(new CleanBeforeCheckout())
 
-        def flowDefinition = new CpsScmFlowDefinition(gitScm, "Jenkinsfile")
-        flowDefinition.setLightweight(true)
+    // Create pipeline from Jenkinsfile in repo
+    def flowDefinition = new CpsScmFlowDefinition(scm, "Jenkinsfile")
+    flowDefinition.setLightweight(true)
 
-        def pipelineJob = jenkins.createProject(WorkflowJob, jobName)
-        pipelineJob.setDefinition(flowDefinition)
-        pipelineJob.save()
+    def pipelineJob = jenkins.createProject(WorkflowJob, jobName)
+    pipelineJob.setDefinition(flowDefinition)
+    pipelineJob.save()
 
-        println "Successfully created job: ${jobName}"
-    } catch (Exception e) {
-        println "Failed to create job: ${jobName}. Error: ${e.message}"
-        throw e
-    }
+    println "✅ Job '${jobName}' created successfully."
 } else {
-    println "Job ${jobName} already exists, skipping creation."
+    println "⚠️ Job '${jobName}' already exists. Skipping creation."
 }
