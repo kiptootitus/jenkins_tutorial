@@ -1,5 +1,5 @@
 pipeline {
-    agent { label 'docker-agent-python3' }
+    agent { label 'docker-agent-alpine' }
 
     stages {
         stage('Wait 2 minutes') {
