@@ -43,7 +43,14 @@ pipeline {
 
         stage('Test') {
             steps {
-                echo 'Testing...'
+                script {
+                    docker.image(env.PYTHON_IMAGE).inside('--user root') {
+                        sh '''
+                            export HOME=/tmp
+                            pytest --maxfail=1 --disable-warnings -q
+                        '''
+                    }
+                }
             }
         }
 
