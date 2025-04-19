@@ -12,7 +12,7 @@ pipeline {
             }
         }
 
-        stage('Install') {
+        stage('Install & Test') {
             steps {
                 script {
                     docker.image(env.PYTHON_IMAGE).inside('--user root') {
@@ -22,6 +22,7 @@ pipeline {
                             python -m ensurepip --upgrade || true
                             pip install --no-cache-dir --upgrade pip
                             pip install --no-cache-dir -r requirements.txt
+                            pytest --maxfail=1 --disable-warnings -q
                         '''
                     }
                 }
@@ -35,19 +36,6 @@ pipeline {
                         sh '''
                             export HOME=/tmp
                             python hello.py
-                        '''
-                    }
-                }
-            }
-        }
-
-        stage('Test') {
-            steps {
-                script {
-                    docker.image(env.PYTHON_IMAGE).inside('--user root') {
-                        sh '''
-                            export HOME=/tmp
-                            pytest --maxfail=1 --disable-warnings -q
                         '''
                     }
                 }
